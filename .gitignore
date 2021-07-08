@@ -1,0 +1,12 @@
+.vscode/
+node_modules/
+build/
+gasReporterOutput.json
+gas-report.txt
+coverage.json
+coverage/
+.envrc
+artifacts/
+cache/
+deployments/
+deploy.json
