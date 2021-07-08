@@ -1,6 +1,6 @@
 # Foundups DAO smart contracts
 [![CI](https://github.com/FOUNDUPS/foundups-dao/actions/workflows/CI.yaml/badge.svg)](https://github.com/FOUNDUPS/foundups-dao/actions/workflows/CI.yaml)
-[![Coverage Status](https://coveralls.io/repos/github/FOUNDUPS/foundups-dao/badge.svg?branch=master)](https://coveralls.io/github/FOUNDUPS/foundups-dao?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/FOUNDUPS/foundups-dao/badge.svg?branch=main)](https://coveralls.io/github/FOUNDUPS/foundups-dao?branch=main)
 [![GitHub license](https://img.shields.io/github/license/FOUNDUPS/foundups-dao)](https://github.com/FOUNDUPS/foundups-dao)
 
 ## 🚧 Development
