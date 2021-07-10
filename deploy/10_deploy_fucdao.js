@@ -15,9 +15,10 @@ export default async ({ getNamedAccounts, deployments }) => {
   const timestampContract = await deployments.get('Timestamp')
   const timestamp = await ethers.getContractAt('Timestamp', timestampContract.address)
 
-  const uChildERC20ProxyContract = await deployments.get('UChildAdministrableERC20_Proxy')
+  // const uChildERC20ProxyContract = await deployments.get('UChildERC20_Proxy')
   const SafeERC20 = await ethers.getContractFactory('@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:SafeERC20')
-  const safeERC20 = SafeERC20.attach(uChildERC20ProxyContract.address)
+  // const safeERC20 = SafeERC20.attach(uChildERC20ProxyContract.address)
+  const safeERC20 = SafeERC20.attach('0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6')
 
   const rewardCalculatorContract = await deployments.get('RewardCalculator')
   const rewardCalculator = await ethers.getContractAt('RewardCalculator', rewardCalculatorContract.address)
@@ -47,4 +48,4 @@ export default async ({ getNamedAccounts, deployments }) => {
   })
 }
 export const tags = ['FucDao']
-module.exports.dependencies = ['ABDKMathQuad', 'Timestamp', 'RewardCalculator', 'UChildAdministrableERC20'] // this ensures the ABDKMathQuad script above is executed shield, so `deployments.get('ABDKMathQuad')` succeeds
+module.exports.dependencies = ['ABDKMathQuad', 'Timestamp', 'RewardCalculator'] // this ensures the ABDKMathQuad script above is executed shield, so `deployments.get('ABDKMathQuad')` succeeds
