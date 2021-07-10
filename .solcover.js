@@ -5,7 +5,7 @@ module.exports = {
     skipFiles: [
         'abdk-libraries-solidity',
         'ERC20Mock.sol',
-        'UChildAdministrableERC20.sol',
+        'UChildERC20.sol',
         'UChildERC20Proxy.sol',
     ],
     providerOptions: {

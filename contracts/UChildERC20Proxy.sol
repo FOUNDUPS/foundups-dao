@@ -1,8 +1,14 @@
-// SPDX-License-Identifier: MIT
+/**
+ *Submitted for verification at polygonscan.com on 2021-06-09
+*/
 
-// File: contracts/lib/Proxy/IERCProxy.sol
+/**
+* https://firebird.finance DeFi multi-chain yield farms deployer & DEXs aggregator.
+*/
 
-pragma solidity 0.6.12;
+// File: contracts/common/Proxy/IERCProxy.sol
+
+pragma solidity 0.6.6;
 
 interface IERCProxy {
     function proxyType() external pure returns (uint256 proxyTypeId);
@@ -10,9 +16,10 @@ interface IERCProxy {
     function implementation() external view returns (address codeAddr);
 }
 
-// File: contracts/lib/Proxy/Proxy.sol
+// File: contracts/common/Proxy/Proxy.sol
 
-pragma solidity 0.6.12;
+pragma solidity 0.6.6;
+
 
 abstract contract Proxy is IERCProxy {
     function delegatedFwd(address _dst, bytes memory _calldata) internal {
@@ -43,13 +50,7 @@ abstract contract Proxy is IERCProxy {
         }
     }
 
-    function proxyType()
-        external
-        virtual
-        override
-        pure
-        returns (uint256 proxyTypeId)
-    {
+    function proxyType() external virtual override pure returns (uint256 proxyTypeId) {
         // Upgradeable proxy
         proxyTypeId = 2;
     }
@@ -57,18 +58,17 @@ abstract contract Proxy is IERCProxy {
     function implementation() external virtual override view returns (address);
 }
 
-// File: contracts/lib/Proxy/UpgradableProxy.sol
+// File: contracts/common/Proxy/UpgradableProxy.sol
 
-pragma solidity 0.6.12;
+pragma solidity 0.6.6;
+
 
 contract UpgradableProxy is Proxy {
     event ProxyUpdated(address indexed _new, address indexed _old);
     event ProxyOwnerUpdate(address _new, address _old);
 
-    bytes32 public constant IMPLEMENTATION_SLOT = keccak256(
-        "matic.network.proxy.implementation"
-    );
-    bytes32 public constant OWNER_SLOT = keccak256("matic.network.proxy.owner");
+    bytes32 constant IMPLEMENTATION_SLOT = keccak256("matic.network.proxy.implementation");
+    bytes32 constant OWNER_SLOT = keccak256("matic.network.proxy.owner");
 
     constructor(address _proxyTo) public {
         setProxyOwner(msg.sender);
@@ -88,11 +88,11 @@ contract UpgradableProxy is Proxy {
         _;
     }
 
-    function proxyOwner() external view returns (address) {
+    function proxyOwner() external view returns(address) {
         return loadProxyOwner();
     }
 
-    function loadProxyOwner() internal view returns (address) {
+    function loadProxyOwner() internal view returns(address) {
         address _owner;
         bytes32 position = OWNER_SLOT;
         assembly {
@@ -105,7 +105,7 @@ contract UpgradableProxy is Proxy {
         return loadImplementation();
     }
 
-    function loadImplementation() internal view returns (address) {
+    function loadImplementation() internal view returns(address) {
         address _impl;
         bytes32 position = IMPLEMENTATION_SLOT;
         assembly {
@@ -129,27 +129,17 @@ contract UpgradableProxy is Proxy {
 
     function updateImplementation(address _newProxyTo) public onlyProxyOwner {
         require(_newProxyTo != address(0x0), "INVALID_PROXY_ADDRESS");
-        require(
-            isContract(_newProxyTo),
-            "DESTINATION_ADDRESS_IS_NOT_A_CONTRACT"
-        );
+        require(isContract(_newProxyTo), "DESTINATION_ADDRESS_IS_NOT_A_CONTRACT");
 
         emit ProxyUpdated(_newProxyTo, loadImplementation());
-
+        
         setImplementation(_newProxyTo);
     }
 
-    function updateAndCall(address _newProxyTo, bytes memory data)
-        public
-        payable
-        onlyProxyOwner
-    {
+    function updateAndCall(address _newProxyTo, bytes memory data) payable public onlyProxyOwner {
         updateImplementation(_newProxyTo);
 
-        // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returnData) = address(this).call{
-            value: msg.value
-        }(data);
+        (bool success, bytes memory returnData) = address(this).call{value: msg.value}(data);
         require(success, string(returnData));
     }
 
@@ -159,7 +149,7 @@ contract UpgradableProxy is Proxy {
             sstore(position, _newProxyTo)
         }
     }
-
+    
     function isContract(address _target) internal view returns (bool) {
         if (_target == address(0)) {
             return false;
@@ -173,10 +163,14 @@ contract UpgradableProxy is Proxy {
     }
 }
 
-// File: contracts/UChildERC20Proxy.sol
+// File: contracts/child/ChildToken/UpgradeableChildERC20/UChildERC20Proxy.sol
 
-pragma solidity 0.6.12;
+pragma solidity 0.6.6;
+
 
 contract UChildERC20Proxy is UpgradableProxy {
-    constructor(address _proxyTo) public UpgradableProxy(_proxyTo) {}
+    constructor(address _proxyTo)
+        public
+        UpgradableProxy(_proxyTo)
+    {}
 }
