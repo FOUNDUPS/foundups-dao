@@ -1,0 +1,110 @@
+name: One-shot js-yaml security preparation
+
+on:
+  push:
+    branches: [repair/js-yaml-security-20260915]
+    paths: [.github/workflows/js-yaml-security-once.yml]
+
+permissions: {}
+
+concurrency:
+  group: js-yaml-security-preparation-20260915
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: github.repository == 'FOUNDUPS/foundups-dao' && github.ref == 'refs/heads/repair/js-yaml-security-20260915' && github.actor == 'Foundup'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      NPM_CONFIG_IGNORE_SCRIPTS: 'true'
+      NPM_CONFIG_AUDIT: 'false'
+      NPM_CONFIG_FUND: 'false'
+      NPM_CONFIG_USERCONFIG: /dev/null
+      YARN_IGNORE_SCRIPTS: 'true'
+      GIT_TERMINAL_PROMPT: '0'
+      HUSKY: '0'
+    steps:
+      - name: Checkout exact preparation commit without saved credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.13.0'
+      - name: Preserve the existing js-yaml major and pin the security patch
+        run: |
+          test "$(yarn --version)" = '1.22.22'
+          node <<'NODE'
+          const fs = require('node:fs');
+          const assert = require('node:assert/strict');
+          const lock = fs.readFileSync('yarn.lock', 'utf8');
+          const blocks = lock.split(/\n(?=\S)/).filter(block => /^"?js-yaml@/.test(block));
+          assert.ok(blocks.length > 0, 'No js-yaml lock entries found');
+          for (const block of blocks) {
+            const version = /\n  version "([^"]+)"/.exec(block)?.[1];
+            assert.ok(/^3\./.test(version || ''), 'Unexpected js-yaml major; refusing blanket override');
+          }
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          pkg.resolutions = {...pkg.resolutions, 'js-yaml': '3.15.2'};
+          fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          NODE
+      - name: Regenerate the existing Yarn lock without lifecycle scripts
+        run: yarn install --ignore-scripts --non-interactive --no-progress
+      - name: Verify frozen lock and all resolved js-yaml copies
+        run: |
+          yarn install --frozen-lockfile --ignore-scripts --non-interactive --no-progress
+          node <<'NODE'
+          const fs = require('node:fs');
+          const assert = require('node:assert/strict');
+          const lock = fs.readFileSync('yarn.lock', 'utf8');
+          const blocks = lock.split(/\n(?=\S)/).filter(block => /^"?js-yaml@/.test(block));
+          assert.ok(blocks.length > 0);
+          for (const block of blocks) {
+            assert.equal(/\n  version "([^"]+)"/.exec(block)?.[1], '3.15.2');
+          }
+          assert.equal(require('js-yaml/package.json').version, '3.15.2');
+          console.log('All js-yaml lock entries resolve to the patched v3 line');
+          NODE
+          git diff --check
+      - name: Test normal YAML, legacy API and bounded empty-merge rejection
+        timeout-minutes: 1
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const yaml = require('js-yaml');
+          assert.equal(typeof yaml.safeLoad, 'function');
+          assert.deepEqual(yaml.safeLoad('enabled: true\ncount: 3\n'), {enabled: true, count: 3});
+          assert.deepEqual(yaml.safeLoad('base: &a {x: 1}\ncopy: {<<: *a, y: 2}\n').copy, {x: 1, y: 2});
+          const text = 'base: &a {}\ncopy:\n  <<: [' + Array(32).fill('*a').join(', ') + ']\n';
+          assert.doesNotThrow(() => yaml.safeLoad(text, {maxTotalMergeKeys: 1000}));
+          assert.throws(() => yaml.safeLoad(text, {maxTotalMergeKeys: 8}));
+          console.log('Normal YAML, legacy safeLoad, merge semantics and bounded regression passed');
+          NODE
+      - name: Publish only package.json and yarn.lock to the isolated branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          BRANCH=repair/js-yaml-security-20260915
+          CURRENT=$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)
+          test "$CURRENT" = "$GITHUB_SHA" || { echo 'Branch moved; refusing concurrent overwrite'; exit 1; }
+          python3 - <<'PY'
+          import subprocess
+          changed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], text=True).splitlines()
+          if not changed or not changed <= {'package.json', 'yarn.lock'} or untracked:
+              raise SystemExit('Unexpected preparation diff; refusing to publish')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json yarn.lock
+          git commit -m 'fix(security): pin legacy js-yaml consumers to patched 3.15.2'
+          GIT_AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          echo "::add-mask::$GIT_AUTH"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $GIT_AUTH" push origin "HEAD:refs/heads/$BRANCH"
+          echo 'Prepared only; no contracts deployed, no alert dismissed, and full CI remains required.'
