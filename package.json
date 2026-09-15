@@ -1,7 +1,8 @@
 {
   "dependencies": {},
   "resolutions": {
-    "adm-zip": "0.6.0"
+    "adm-zip": "0.6.0",
+    "js-yaml": "3.15.2"
   },
   "name": "faster-than-light",
   "version": "1.0.0",
