@@ -1,9 +1,9 @@
-import { waffleChai } from '@ethereum-waffle/chai'
-import { waffle, ethers } from 'hardhat'
-import { use, expect } from 'chai'
-import Timestamp from '../artifacts/contracts/Timestamp.sol/Timestamp.json'
+const { waffleChai } = require('@ethereum-waffle/chai')
+const { waffle, ethers } = require('hardhat')
+const { use, expect } = require('chai')
+const Timestamp = require('../artifacts/contracts/Timestamp.sol/Timestamp.json')
 // eslint-disable-next-line no-unused-vars
-import { BN } from '@openzeppelin/test-helpers'
+const { BN } = require('@openzeppelin/test-helpers')
 use(waffleChai)
 
 describe('Timestamp contract', () => {

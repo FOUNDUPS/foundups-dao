@@ -1,8 +1,8 @@
-import { constants } from '../src/utils/Constants'
-import { RecordList } from '../src/utils/RecordList'
-import { ethers } from 'hardhat'
+const { constants } = require('../src/utils/Constants')
+const { RecordList } = require('../src/utils/RecordList')
+const { ethers } = require('hardhat')
 
-export default async ({ getNamedAccounts, deployments }) => {
+module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments
   const { deployer, first, second, third } = await getNamedAccounts()
   const dividends = first
@@ -47,5 +47,5 @@ export default async ({ getNamedAccounts, deployments }) => {
     log: true
   })
 }
-export const tags = ['FucDao']
+module.exports.tags = ['FucDao']
 module.exports.dependencies = ['ABDKMathQuad', 'Timestamp', 'RewardCalculator'] // this ensures the ABDKMathQuad script above is executed shield, so `deployments.get('ABDKMathQuad')` succeeds

@@ -5,6 +5,13 @@
 
 ## 🚧 Development
 
+Use Node 22 LTS (minimum 22.23.3; see `.nvmrc`) and Yarn 1.22.22.
+Install reproducibly with `yarn install --frozen-lockfile --ignore-scripts`.
+Configuration, scripts and tests use native CommonJS; no `esm` preload is needed.
+This runtime migration preserves the Solidity sources and existing compiler
+settings. Legacy Hardhat/plugin and dependency risks remain separately tracked
+in `docs/security/`; passing tests is not a complete toolchain security audit.
+
 ### 🐑 Repository cloning
 ```terminal
 git clone https://github.com/FOUNDUPS/foundups-dao

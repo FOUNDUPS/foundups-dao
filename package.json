@@ -16,6 +16,9 @@
   },
   "name": "faster-than-light",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=22.23.3 <23"
+  },
   "description": "Faster Than Light smart contracts",
   "main": "",
   "devDependencies": {
@@ -38,7 +41,6 @@
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "esm": "^3.2.25",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.1",
     "flatted": "^3.4.2",
@@ -54,7 +56,7 @@
     "web3": "^1.4.0"
   },
   "scripts": {
-    "hardhat": "node --require esm node_modules/.bin/hardhat",
+    "hardhat": "node node_modules/.bin/hardhat",
     "flatten": "run(){ yarn hardhat flatten contracts/$1.sol > Flat$1.sol; }; run",
     "compile": "yarn hardhat compile",
     "test": "yarn hardhat test",

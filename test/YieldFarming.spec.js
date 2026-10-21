@@ -1,14 +1,14 @@
-import { waffleChai } from '@ethereum-waffle/chai'
-import { use, expect } from 'chai'
-import { waffle, ethers } from 'hardhat'
+const { waffleChai } = require('@ethereum-waffle/chai')
+const { use, expect } = require('chai')
+const { waffle, ethers } = require('hardhat')
 // eslint-disable-next-line no-unused-vars
-import { BN } from '@openzeppelin/test-helpers'
-import { mockedDeploy, MULTIPLIER } from '../scripts/mainDeploy'
-import ABDKMathQuad from '../artifacts/contracts/abdk-libraries-solidity/ABDKMathQuad.sol/ABDKMathQuad.json'
-import FucDao from '../artifacts/contracts/FucDao.sol/FucDao.json'
-import Timestamp from '../artifacts/contracts/Timestamp.sol/Timestamp.json'
-import ERC20Mock from '../artifacts/contracts/ERC20Mock.sol/ERC20Mock.json'
-import { RecordList } from '../src/utils/RecordList'
+const { BN } = require('@openzeppelin/test-helpers')
+const { mockedDeploy, MULTIPLIER } = require('../scripts/mainDeploy')
+const ABDKMathQuad = require('../artifacts/contracts/abdk-libraries-solidity/ABDKMathQuad.sol/ABDKMathQuad.json')
+const FucDao = require('../artifacts/contracts/FucDao.sol/FucDao.json')
+const Timestamp = require('../artifacts/contracts/Timestamp.sol/Timestamp.json')
+const ERC20Mock = require('../artifacts/contracts/ERC20Mock.sol/ERC20Mock.json')
+const { RecordList } = require('../src/utils/RecordList')
 use(waffleChai)
 
 describe('FucDao contract', () => {

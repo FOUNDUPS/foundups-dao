@@ -1,5 +1,5 @@
-import { rawDeploy, Timestamp, waffle, ethers, MULTIPLIER, RecordList } from './mainDeploy'
-import { stringify } from 'flatted'
+const { rawDeploy, Timestamp, waffle, ethers, MULTIPLIER, RecordList } = require('./mainDeploy')
+const { stringify } = require('flatted')
 const fs = require('fs')
 
 const deployMe = async (_multiplier) => {

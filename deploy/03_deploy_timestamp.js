@@ -1,4 +1,4 @@
-export default async ({ getNamedAccounts, deployments }) => {
+module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments
   const { deployer } = await getNamedAccounts()
   await deploy('Timestamp', {
@@ -7,4 +7,4 @@ export default async ({ getNamedAccounts, deployments }) => {
     log: true
   })
 }
-export const tags = ['Timestamp']
+module.exports.tags = ['Timestamp']
