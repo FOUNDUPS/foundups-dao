@@ -27,6 +27,17 @@ yarn lint
 yarn test
 ```
 
+Ordinary tests use the in-process Hardhat network. Gas reporting is disabled
+unless `ENABLE_GAS_REPORT=1` is explicitly set (`yarn gas-report` sets it).
+The gas reporter may request currency prices from an external service.
+
+Public-network signing requires an explicitly supplied `MNEMONIC` or the complete
+`PKD`, `PK1`, `PK2`, `PK3`, `PK4` set. With no credentials, public networks have
+an empty signer list; they never use a development mnemonic or RPC-provided
+accounts. Partial key sets reject configuration without printing their values.
+Local Hardhat test accounts are unchanged. Do not use a development wallet for
+real funds.
+
 #### ✔️ With code coverage
 
 ```terminal

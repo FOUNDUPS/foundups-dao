@@ -4,28 +4,25 @@ import '@nomiclabs/hardhat-solhint'
 import '@nomiclabs/hardhat-ethers'
 import '@nomiclabs/hardhat-waffle'
 import 'solidity-coverage'
-import 'hardhat-gas-reporter'
 
 const fs = require('fs')
 const path = require('path')
+const externalNetworkAccounts = require('./hardhat/network-accounts')
 
 for (const f of fs.readdirSync(path.join(__dirname, 'hardhat'))) {
   require(path.join(__dirname, 'hardhat', f))
 }
 
-const enableGasReport = !!process.env.ENABLE_GAS_REPORT
+const enableGasReport = process.env.ENABLE_GAS_REPORT === '1'
 const enableProduction = process.env.COMPILE_MODE === 'production'
 
-const { MNEMONIC, PKD, PK1, PK2, PK3, PK4, INFURA_KEY, TENDERLY_USERNAME, TENDERLY_PROJECT } = process.env
-const DEFAULT_MNEMONIC = 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'
+// The reporter can request remote currency prices. Ordinary tests stay local;
+// loading it requires the explicit gas-report opt-in.
+if (enableGasReport) require('hardhat-gas-reporter')
 
-const sharedNetworkConfig = {}
-if (PKD && PK1 && PK2 && PK3 && PK4) {
-  sharedNetworkConfig.accounts = [PKD, PK1, PK2, PK3, PK4]
-} else {
-  sharedNetworkConfig.accounts = {
-    mnemonic: MNEMONIC || DEFAULT_MNEMONIC
-  }
+const { INFURA_KEY, TENDERLY_USERNAME, TENDERLY_PROJECT } = process.env
+const sharedNetworkConfig = {
+  accounts: externalNetworkAccounts(process.env)
 }
 
 /**
@@ -70,7 +67,7 @@ module.exports = {
       url: `https://polygon-mumbai.infura.io/v3/${INFURA_KEY}`
     },
     polygon: {
-      chainID: 137,
+      chainId: 137,
       ...sharedNetworkConfig,
       url: `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`
     }
@@ -83,7 +80,7 @@ module.exports = {
     fourth: 4
   },
   gasReporter: {
-    enable: enableGasReport,
+    enabled: enableGasReport,
     currency: 'USD',
     outputFile: process.env.CI ? 'gas-report.txt' : undefined
   },
