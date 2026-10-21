@@ -1,4 +1,4 @@
-import { parse } from 'flatted'
+const { parse } = require('flatted')
 const fs = require('fs')
 
 const main = async () => {

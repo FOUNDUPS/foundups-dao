@@ -45,7 +45,7 @@ describe('External network signing credentials', () => {
     this.timeout(20000)
     // Load the real Hardhat configuration in a credential-free child. No network
     // provider is invoked and no parent environment credentials are inherited.
-    execFileSync(process.execPath, ['--require', 'esm', '-e', `
+    execFileSync(process.execPath, ['-e', `
       const assert = require('assert');
       const { config } = require('hardhat');
       assert.deepStrictEqual(config.networks.polygon.accounts, []);
@@ -55,11 +55,27 @@ describe('External network signing credentials', () => {
       assert.strictEqual(config.gasReporter.enabled, false);
       assert.ok(!Object.keys(require.cache).some(file =>
         file.includes('/hardhat-gas-reporter/') || file.includes('/eth-gas-reporter/')));
+      assert.ok(!Object.keys(require.cache).some(file => file.includes('/esm/')));
     `], {
       cwd: path.join(__dirname, '..'),
       env: { PATH: process.env.PATH, CI: 'true' },
       timeout: 15000,
       stdio: 'pipe'
     })
+  })
+
+  it('preserves native deployment functions and their dependency metadata without invoking them', () => {
+    const expected = [
+      ['02_deploy_abdkmathquad', ['ABDKMathQuad'], undefined],
+      ['03_deploy_timestamp', ['Timestamp'], undefined],
+      ['04_deploy_rewardcalculator', ['RewardCalculator'], ['ABDKMathQuad']],
+      ['10_deploy_fucdao', ['FucDao'], ['ABDKMathQuad', 'Timestamp', 'RewardCalculator']]
+    ]
+    for (const [name, tags, dependencies] of expected) {
+      const deployment = require(`../deploy/${name}`)
+      assert.strictEqual(typeof deployment, 'function')
+      assert.deepStrictEqual(deployment.tags, tags)
+      assert.deepStrictEqual(deployment.dependencies, dependencies)
+    }
   })
 })

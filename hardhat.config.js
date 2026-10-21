@@ -1,9 +1,9 @@
-import 'hardhat-deploy'
+require('hardhat-deploy')
 
-import '@nomiclabs/hardhat-solhint'
-import '@nomiclabs/hardhat-ethers'
-import '@nomiclabs/hardhat-waffle'
-import 'solidity-coverage'
+require('@nomiclabs/hardhat-solhint')
+require('@nomiclabs/hardhat-ethers')
+require('@nomiclabs/hardhat-waffle')
+require('solidity-coverage')
 
 const fs = require('fs')
 const path = require('path')

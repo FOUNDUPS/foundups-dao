@@ -13,4 +13,4 @@ const DEPLOYMENT_NETWORK = 'mumbai'
 const NETWORK = { DEPLOYMENT: DEPLOYMENT_NETWORK }
 const constants = { MULTIPLIER, INTEREST, TOKEN, LOCK_TIME, NETWORK }
 
-export { constants }
+module.exports = { constants }

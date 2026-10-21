@@ -1,13 +1,13 @@
-import { waffleChai } from '@ethereum-waffle/chai'
-import { ethers, waffle } from 'hardhat'
-import { use, expect } from 'chai'
+const { waffleChai } = require('@ethereum-waffle/chai')
+const { ethers, waffle } = require('hardhat')
+const { use, expect } = require('chai')
 // eslint-disable-next-line no-unused-vars
-import { BN } from '@openzeppelin/test-helpers'
-import ABDKMathQuad from '../artifacts/contracts/abdk-libraries-solidity/ABDKMathQuad.sol/ABDKMathQuad.json'
-import FucDao from '../artifacts/contracts/FucDao.sol/FucDao.json'
-import ERC20Mock from '../artifacts/contracts/ERC20Mock.sol/ERC20Mock.json'
-import Timestamp from '../artifacts/contracts/Timestamp.sol/Timestamp.json'
-import { RecordList } from '../src/utils/RecordList'
+const { BN } = require('@openzeppelin/test-helpers')
+const ABDKMathQuad = require('../artifacts/contracts/abdk-libraries-solidity/ABDKMathQuad.sol/ABDKMathQuad.json')
+const FucDao = require('../artifacts/contracts/FucDao.sol/FucDao.json')
+const ERC20Mock = require('../artifacts/contracts/ERC20Mock.sol/ERC20Mock.json')
+const Timestamp = require('../artifacts/contracts/Timestamp.sol/Timestamp.json')
+const { RecordList } = require('../src/utils/RecordList')
 use(waffleChai)
 
 const MULTIPLIER = 1E12
@@ -78,4 +78,4 @@ const rawDeploy = async (timestamp, acceptedToken, payees, accounts, constants) 
   return { acceptedToken, rewardCalculator, first, second, third, fourth, fucDao, fucToken, timestamp, payees, constants }
 }
 
-export { mockedDeploy, rawDeploy, Timestamp, waffle, expect, ethers, MULTIPLIER, RecordList }
+module.exports = { mockedDeploy, rawDeploy, Timestamp, waffle, expect, ethers, MULTIPLIER, RecordList }

@@ -1,4 +1,4 @@
-import { assert } from 'chai'
+const { assert } = require('chai')
 
 class Record {
   constructor (address, shares) {
@@ -32,4 +32,4 @@ class RecordList {
   }
 }
 
-export { RecordList }
+module.exports = { RecordList }
